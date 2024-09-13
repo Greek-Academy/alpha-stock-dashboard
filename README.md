@@ -1,6 +1,7 @@
 # alpha-stock-dashboard
 
 This is Web App that provides stock dashboard on Vue3.
+[here](https://main.d1ytf3rdm8ygwm.amplifyapp.com/)
 
 ## Recommended IDE Setup
 
