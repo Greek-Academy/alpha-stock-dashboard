@@ -44,7 +44,7 @@ def fetch_all_stocks(symbols)
       data = fetch_stock_data(symbol)
       if data
         all_data.concat(data)
-        puts "#{symbol} 데이터 가져오기 완료"
+        puts "Fetched #{symbol}"
       end
       sleep 12
     end
