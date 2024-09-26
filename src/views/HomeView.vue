@@ -92,7 +92,7 @@ const chartOption = computed(() => ({
         .filter(item => item.symbol === symbol)
         .map(item => [
           `${item.year}-${item.month.toString().padStart(2, '0')}`,
-          item.avg_price
+          Number(item.avg_price.toFixed(2))
         ])
   }))
 }));
