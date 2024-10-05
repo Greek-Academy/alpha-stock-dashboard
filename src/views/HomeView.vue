@@ -56,9 +56,6 @@ const handleYearChange = (type, value) => {
 };
 
 const chartOption = computed(() => ({
-  title: {
-    text: 'Monthly Average Stock Price Comparison'
-  },
   tooltip: {
     trigger: 'axis',
     axisPointer: {
