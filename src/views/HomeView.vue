@@ -12,7 +12,6 @@ import {
 import VChart from 'vue-echarts';
 import { supabase } from "@/utils/supabase";
 
-
 use([
   CanvasRenderer,
   LineChart,
@@ -22,8 +21,15 @@ use([
   GridComponent,
 ]);
 
-const stockData = ref([]);
-const selectedStocks = ref(['AAPL', 'AMZN', 'MSFT', 'GOOGL']);
+interface StockData {
+  symbol: string;
+  year: number;
+  month: number;
+  avg_price: number;
+}
+
+const stockData = ref<StockData[]>([]);
+const selectedStocks = ref<string[]>(['AAPL', 'AMZN', 'MSFT', 'GOOGL']);
 const yearRange = ref({ start: 2023, end: 2024 });
 const availableStocks = ['AAPL', 'AMZN', 'MSFT', 'GOOGL'];
 
@@ -36,14 +42,15 @@ const fetchMonthlyAvgPrice = async () => {
       .lte('year', yearRange.value.end)
       .order('year')
       .order('month');
+
   if (error) {
     console.error('Error fetching monthly average price data:', error);
   } else {
-    stockData.value = data;
+    stockData.value = data as StockData[];
   }
 };
 
-const handleStockSelection = (symbol) => {
+const handleStockSelection = (symbol: string) => {
   if (selectedStocks.value.includes(symbol)) {
     selectedStocks.value = selectedStocks.value.filter(s => s !== symbol);
   } else {
@@ -51,8 +58,11 @@ const handleStockSelection = (symbol) => {
   }
 };
 
-const handleYearChange = (type, value) => {
-  yearRange.value[type] = parseInt(value);
+const handleYearChange = (type: 'start' | 'end', event: Event) => {
+  const target = event.target as HTMLInputElement;
+  if (target) {
+    yearRange.value[type] = parseInt(target.value);
+  }
 };
 
 const chartOption = computed(() => ({
@@ -69,7 +79,7 @@ const chartOption = computed(() => ({
     type: 'category',
     data: Array.from(new Set(stockData.value.map(item => `${item.year}-${item.month.toString().padStart(2, '0')}`))).sort(),
     axisLabel: {
-      formatter: (value) => {
+      formatter: (value: string) => {
         const [year, month] = value.split('-');
         return `${year}-${month}`;
       }
@@ -96,7 +106,9 @@ const chartOption = computed(() => ({
 
 onMounted(fetchMonthlyAvgPrice);
 
-watch([selectedStocks, yearRange], fetchMonthlyAvgPrice);
+// selectedStocks と yearRange の変更を監視し、変更があればデータを再取得
+watch([selectedStocks, yearRange], fetchMonthlyAvgPrice, { deep: true });
+
 </script>
 
 <template>
@@ -117,14 +129,14 @@ watch([selectedStocks, yearRange], fetchMonthlyAvgPrice);
         <input
             type="number"
             v-model="yearRange.start"
-            @input="handleYearChange('start', $event.target.value)"
+            @input="(event: Event) => handleYearChange('start', event)"
             min="2000"
             max="2024"
         />
         <input
             type="number"
             v-model="yearRange.end"
-            @input="handleYearChange('end', $event.target.value)"
+            @input="(event: Event) => handleYearChange('end', event)"
             min="2000"
             max="2024"
         />
